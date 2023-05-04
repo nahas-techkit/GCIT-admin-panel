@@ -1,5 +1,5 @@
 import { Container, Grid, CardMedia, Stack, TextField, Typography } from '@mui/material';
-import { useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useFormik, form } from 'formik';
 import { makeStyles } from '@material-ui/core/styles';
@@ -8,9 +8,9 @@ import { Toaster } from 'react-hot-toast';
 import { LoadingButton } from '@mui/lab';
 import axios from '../../utils/axios';
 import { Alert, notifySucess, notifyError } from '../../utils/alert';
-import { spekerReducer} from '../../Reducers/eventReducers';
+import { spekerReducer } from '../../Reducers/eventReducers';
 import Loading from '../Loading/Loading';
-
+import { baseUrl } from '../../utils/BaseUrl';
 
 const useStyles = makeStyles({
   input: {
@@ -23,15 +23,15 @@ const useStyles = makeStyles({
   },
 });
 
-
-
 function Form() {
-
   const [{ loading, spekers }, spekerDispatch] = useReducer(spekerReducer, {
     loading: false,
     spekers: {},
     error: '',
   });
+
+  const [loadingData, setLoadingData] = useState(false);
+  const [speker, setSpeker] = useState({});
 
   const classes = useStyles();
   const [image, setImage] = useState(null);
@@ -49,14 +49,22 @@ function Form() {
         });
 
         try {
-          spekerDispatch({ type: 'SPEKERS_REQUEST' });
-          const { data } = await axios.post('v1/admin/speker', formData);
-          spekerDispatch({ type: 'SPEKERS_SUCCESS', payload: data });
+          if (edit) {
+            spekerDispatch({ type: 'SPEKERS_REQUEST' });
+            const { data } = await axios.put(`v1/admin/speker/${id}`, formData);
+            spekerDispatch({ type: 'SPEKERS_SUCCESS', payload: data });
+            resetForm();
+            notifySucess(data.message);
+          } else {
+            spekerDispatch({ type: 'SPEKERS_REQUEST' });
+            const { data } = await axios.post('v1/admin/speker', formData);
+            spekerDispatch({ type: 'SPEKERS_SUCCESS', payload: data });
+            resetForm();
+            notifySucess('Your entry was saved');
+          }
         } catch (err) {
           spekerDispatch({ type: 'SPEKERS_ERROR', payload: err.message });
         }
-        resetForm();
-        notifySucess('Your entry was saved');
       } else {
         notifyError('Your action was cancelled');
         resetForm();
@@ -81,23 +89,53 @@ function Form() {
     state: '',
     country: '',
     postal_code: '',
-    photo: '',
+    photo: null,
   });
+
+  const getInitialValues = async () => {
+    if (!edit) {
+      // Edit not allowed
+      return;
+    }
+    setLoadingData(true);
+    const { data } = await axios.get(`v1/user/speker/${id}`);
+    setIntialValue({
+      name: data?.name,
+      phone_no: data?.phone_no,
+      email: data?.email,
+      personal_bio: data?.personal_bio,
+      company: data?.company,
+      education: data?.education,
+      permenent_address: data?.permenent_address,
+      city: data?.city,
+      state: data?.state,
+      country: data?.country,
+      postal_code: data?.postal_code,
+      photo: null,
+    });
+    setSpeker(data);
+    setLoadingData(false);
+  };
 
   const { values, errors, touched, handleBlur, handleChange, handleSubmit, setFieldValue, isSubmitting } = useFormik({
     initialValues: initialValue,
     validationSchema: checkoutSchema,
+    enableReinitialize: edit,
     onSubmit: async (values, { resetForm }) => {
       handleSpekerSubmit(values, resetForm);
     },
   });
 
+  useEffect(() => {
+    getInitialValues();
+  }, []);
+
   return (
     <Container>
-      {loading && <Loading />}
+      {<Loading loading={loading || loadingData} />}
       <Toaster />
       <Typography variant="h4" gutterBottom>
-        Create New Event
+        {edit ? 'Edit Speker' :'Add New Spekers'}
       </Typography>
 
       <form onSubmit={handleSubmit}>
@@ -252,6 +290,16 @@ function Form() {
             className={classes.preview}
           />
         )}
+
+        {edit && !image && (
+          <CardMedia
+            sx={{ background: '#D0D3D8', p: 0.5, borderRadius: '5px', maxWidth: '150px' }}
+            component="img"
+            alt="Preview"
+            image={baseUrl + speker?.photo}
+            className={classes.preview}
+          />
+        )}
         <Stack
           sx={{ position: 'sticky', bottom: 100, right: 50 }}
           mt={3}
@@ -278,7 +326,7 @@ const checkoutSchema = yup.object().shape({
   country: yup.string().required('Country No is required'),
   photo: yup
     .mixed()
-    .required('Please upload a file')
+    .nullable(true)
     .test('fileFormat', 'Only jpeg or jpg files are allowed', (value) => {
       if (value) {
         return ['image/jpeg', 'image/jpg'].includes(value.type);

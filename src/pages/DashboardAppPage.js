@@ -18,15 +18,20 @@ import {
   AppConversionRates,
 } from '../sections/@dashboard/app';
 
+import axios from '../utils/axios'
 // ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
   const theme = useTheme();
 
+  const getDashboardDetails = async ()=>{
+    const {data} = await axios.get('v1/admin/dashboard')
+  }
+
   return (
     <>
       <Helmet>
-        <title> Dashboard | Minimal UI </title>
+        <title> Dashboard | IGIC </title>
       </Helmet>
 
       <Container maxWidth="xl">
@@ -36,19 +41,19 @@ export default function DashboardAppPage() {
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Weekly Sales" total={714000} icon={'ant-design:android-filled'} />
+            <AppWidgetSummary title="Total Users" total={714000} icon={'mdi:user'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="New Users" total={1352831} color="info" icon={'ant-design:apple-filled'} />
+            <AppWidgetSummary title="Total Events" total={1352831} color="info" icon={'material-symbols:event-note-outline'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Item Orders" total={1723315} color="warning" icon={'ant-design:windows-filled'} />
+            <AppWidgetSummary title="Total Spekers" total={1723315} color="warning" icon={'material-symbols:mic-external-on-rounded'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Bug Reports" total={234} color="error" icon={'ant-design:bug-filled'} />
+            <AppWidgetSummary title="Total Sponsers" total={234} color="error" icon={'mdi:charity'} />
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>

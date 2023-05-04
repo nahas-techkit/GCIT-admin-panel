@@ -14,7 +14,7 @@ import { Alert, notifySucess, notifyError } from '../../utils/alert';
 
 
 
-export default function DataTable({ row }) {
+export default function DataTable({ row, getAllSponsers }) {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const columns = [
@@ -63,9 +63,11 @@ export default function DataTable({ row }) {
     const { isConfirmed } = await Alert('Are you sure?', 'you want to delete this');
     if (!isConfirmed) {
       notifyError('Your action was cancelled');
+      
     } else {
       setLoading(true)
       await axios.delete(`v1/admin/sponser/${id}`);
+      getAllSponsers()
       notifySucess('File deleted successfully');
       setLoading(false)
     }
@@ -76,7 +78,7 @@ export default function DataTable({ row }) {
 
     console.log(id);
   }
-  const getRowId = (row) => row.name + row.phone_no;
+  const getRowId = (row) => row.name + row._id;
   const [pageSize, setPageSize] = useState(10);
 
   const handlePageSizeChange = (event) => {

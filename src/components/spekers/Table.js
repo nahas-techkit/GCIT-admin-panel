@@ -1,4 +1,4 @@
-import * as React from 'react';
+import  React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Avatar, Box, Button, Paper, Stack, Typography } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
@@ -7,10 +7,33 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import Lable from '../Lable/StatusLable';
 import { baseUrl } from '../../utils/BaseUrl';
+import axios from '../../utils/axios';
+import { Alert, notifySucess, notifyError } from '../../utils/alert';
+import Loading from '../Loading/Loading';
+import StatusPopup from './StatusPopup';
 
 
 
-export default function DataTable({ row }) {
+export default function DataTable({ row, deleteSpeker, getAllSpeakers }) {
+  const [open,setOpen]= useState(false)
+  const [loading, setLoading] = useState(false);
+  const [speker, setSpeker] = useState({});
+  const changeStatus=async (row)=>{
+    console.log(row, 'change');
+    setSpeker(row);
+    setOpen(true)
+
+  }
+
+  const handleStatusChange= async (value)=>{
+    setLoading(true);
+    console.log('ss=>',value, speker);
+    const { data } = await axios.patch(`v1/admin/speker-status/${speker?._id}`, { status: value });
+    getAllSpeakers()
+    setLoading(false);
+    notifySucess(data.message);
+    setOpen(false);
+  }
 
   const columns = [
     {
@@ -33,7 +56,8 @@ export default function DataTable({ row }) {
       width: 100,
       sortable: false,
       filterable: false,
-      renderCell: (params) => <Lable value={params.value} />,
+      
+      renderCell: (params) => <Lable value={params?.value} row={params?.row} changeStatus={changeStatus}   />,
     },
   
     {
@@ -44,8 +68,8 @@ export default function DataTable({ row }) {
       filterable: false,
       renderCell: ({row}) => (
         <Box>
-          <Button color='success' onClick={() => navigate(`/dashboard/speker/edit/${row._id}`)}><VisibilityIcon/></Button>
-          <Button onClick={() => navigate(`/dashboard/speker/edit/${row._id}`)}><EditIcon/></Button>
+          {/* <Button color='success' onClick={() => navigate(`/dashboard/speker/edit/${row._id}`)}><VisibilityIcon/></Button> */}
+          <Button onClick={() => navigate(`/dashboard/spekers/edit/${row._id}`)}><EditIcon/></Button>
           <Button color='error' onClick={() => deleteSpeker(row._id)}><DeleteIcon/></Button>
         </Box>
       ),
@@ -54,15 +78,8 @@ export default function DataTable({ row }) {
   
   ];
 
-
-
-
-
-  const deleteSpeker = (id)=>{
-    console.log();
-  }
   const navigate = useNavigate();
-  const getRowId = (row) => row.name + row.phone_no;
+  const getRowId = (row) => row.name + row._id;
   const [pageSize, setPageSize] = React.useState(10);
 
   const handlePageSizeChange = (event) => {
@@ -71,9 +88,18 @@ export default function DataTable({ row }) {
 
   return (
     <Box>
+      <StatusPopup
+        open={open}
+        setOpen={setOpen}
+        handleStatusChange={handleStatusChange}
+        currentStatus={speker?.status}
+      />
+      <Loading loading={loading} />
+
+
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
           <Typography variant="h4" gutterBottom>
-            Sponsers
+            Spekers
           </Typography>
           <Button
             component={RouterLink}

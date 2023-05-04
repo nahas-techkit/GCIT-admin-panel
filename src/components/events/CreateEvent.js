@@ -1,6 +1,7 @@
-import { Autocomplete, Button, Container, Grid, InputLabel, Stack, TextField, Typography } from '@mui/material';
+import { Container, Grid, InputLabel, Stack, TextField, Typography } from '@mui/material';
 import { useEffect, useReducer, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import moment from 'moment';
 import { Formik, Form as Forms, useFormik } from 'formik';
 import * as yup from 'yup';
 import { Toaster } from 'react-hot-toast';
@@ -9,143 +10,117 @@ import axios from '../../utils/axios';
 import { Alert, notifySucess, notifyError } from '../../utils/alert';
 import { spekerReducer, createEventReducer } from '../../Reducers/eventReducers';
 import Loading from '../Loading/Loading';
-import {handleEventSubmit} from '../../functions/event'
+import { handleEventSubmit } from '../../functions/event';
 
 function Form() {
+  const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const edit = !!id;
 
-  const [discription, setDiscription] = useState([]);
+
   const [initialValue, setIntialValue] = useState({
-    title: '',
-    startDateTime: '',
-    endDateTime: '',
-    speakers: [],
-    moderator: [],
-    discription,
+    eventTitle: '',
+    startDateTime: moment().format('YYYY-MM-DDTHH:mm'),
+    endDateTime: moment().format('YYYY-MM-DDTHH:mm'),
+    venue: '',
+    discription: '',
   });
 
+  // Setup Intial Value For Edit
   const eventDetail = async () => {
+    if (!edit) {
+      return;
+    }
     const { data } = await axios.get(`v1/admin/event/${id}`);
     setIntialValue({
-      title: data.title,
-      startDateTime: data.startDateTime,
-      endDateTime: data.endDateTime,
-      speakers: data.speakers,
-      moderator: data.moderator,
-      discription: data.discription,
-    });
-
-    setDiscription((pre) => [...pre, data.discription]);
-  };
-
-  const handleAddDiscription = (event, newValue) => {
-    setDiscription(newValue || []);
-  };
-  
-
-  const editEventHandler = async (values, resetForm) => {
-    const value = {
-      ...values,
-      discription,
-    };
-    Alert('Are you sure?', 'you want to add this').then(async (result) => {
-      if (result.isConfirmed) {
-        await axios.put(`v1/admin/event/${id}`, value);
-        resetForm();
-        notifySucess('Your entry was saved');
-      } else {
-        notifyError('Your action was cancelled');
-        resetForm();
-      }
+      eventTitle: data?.event?.eventTitle,
+      startDateTime: moment(data?.event?.startDateTime).format('YYYY-MM-DDTHH:mm'),
+      endDateTime: moment(data?.event?.endDateTime).format('YYYY-MM-DDTHH:mm'),
+      venue: data?.event?.venue,
+      discription: data?.event?.discription,
     });
   };
 
-  const addEvent = async (values) => {
-    const value = {
-      ...values,
-      discription,
-    };
-    await axios.post('v1/admin/event', value);
+  // Create New Event
+  const addEvent = async (values, resetForm) => {
+    const { isConfirmed } = await Alert('Are you sure?', 'you want to add this');
+    if (isConfirmed) {
+      setLoading(true);
+      const { data } = await axios.post('v1/admin/event', values);
+      notifySucess(data.message);
+      resetForm();
+      setLoading(false);
+    } else {
+      resetForm();
+      notifyError('Your action was cancelled');
+    }
   };
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit, setFieldValue, isSubmitting } = useFormik({
+
+  // Edit event
+  const editEvent = async (values, resetForm) => {
+    const { isConfirmed } = await Alert('Are you sure?', 'you want to add this');
+    if (isConfirmed) {
+      setLoading(true);
+      const { data } = await axios.post('v1/admin/event', values);
+      notifySucess(data.message);
+      resetForm();
+      setLoading(false);
+    } else {
+      resetForm();
+      notifyError('Your action was cancelled');
+    }
+  };
+
+
+  const { values, errors, touched, handleBlur, handleChange, handleSubmit,  isSubmitting } = useFormik({
     initialValues: initialValue,
     validationSchema: checkoutSchema,
     enableReinitialize: edit,
     onSubmit: async (values, { resetForm }) => {
-      
-      if(edit){
-        editEventHandler(values, resetForm)
-      } else{
-        handleEventSubmit(values, resetForm,eventDispatch,addEvent,setDiscription)
+      if (edit) {
+        editEvent(values, resetForm);
+      } else {
+        addEvent(values, resetForm);
       }
     },
   });
-  const [{ loading, spekers }, spekerDispatch] = useReducer(spekerReducer, {
-    loading: false,
-    spekers: [],
-    error: '',
-  });
-
-  const [{ evtLoading }, eventDispatch] = useReducer(spekerReducer, {
-    evtLoading: false,
-    event: {},
-    errors: '',
-  });
-
-  const getAllspekers = async () => {
-    try {
-      spekerDispatch({
-        type: 'SPEKERS_REQUEST',
-      });
-      const { data } = await axios.get('v1/admin/speker');
-
-      spekerDispatch({
-        type: 'SPEKERS_SUCCESS',
-        payload: data,
-      });
-    } catch (error) {
-      spekerDispatch({
-        type: 'SPEKERS_ERROR',
-        payload: error.response.data.message,
-      });
-    }
-  };
 
   useEffect(() => {
-    getAllspekers();
     eventDetail();
   }, []);
+
   return (
     <Container>
-      <Loading loading={loading || evtLoading} />
+      <Loading loading={loading} />
       <Toaster />
       <Typography variant="h4" gutterBottom>
-        Create New Event
+        {edit ? 'Edit Event' : 'Create New Event'}
       </Typography>
 
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
-          <Grid item sm={12} md={12}>
+          <Grid item sm={12} md={12} xs={12}>
             <TextField
               fullWidth
               label="Title"
               variant="outlined"
               onBlur={handleBlur}
               onChange={handleChange}
-              value={values.title}
-              name="title"
-              error={!!touched.title && !!errors.title}
-              helperText={touched.title && errors.title}
+              value={values.eventTitle}
+              name="eventTitle"
+              error={!!touched.eventTitle && !!errors.eventTitle}
+              helperText={touched.eventTitle && errors.eventTitle}
             />
           </Grid>
-          <Grid item md={6} sm={12}>
+          <Grid item md={6} sm={12} xs={12}>
             <InputLabel shrink htmlFor="bootstrap-input">
               Starting Date and Time
             </InputLabel>
             <TextField
               fullWidth
               type="datetime-local"
+              // my-date-format="DD/MM/YYYY, hh:mm:ss"
+              id="meeting-time"
               variant="outlined"
               onBlur={handleBlur}
               onChange={handleChange}
@@ -156,7 +131,7 @@ function Form() {
             />
           </Grid>
 
-          <Grid item md={6} sm={12}>
+          <Grid item md={6} sm={12} xs={12}>
             <InputLabel shrink htmlFor="bootstrap-input">
               Ending Date and Time
             </InputLabel>
@@ -173,79 +148,32 @@ function Form() {
             />
           </Grid>
 
-          <Grid item md={12} sm={12}>
-            <Autocomplete
-              multiple
-              id="tags-outlined"
-              options={spekers}
-              getOptionLabel={(spekers) => spekers?.name}
-              filterSelectedOptions
-              value={values.speakers || null}
-              onChange={(event, value) => {
-                setFieldValue('speakers', value);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Select Spekers"
-                  placeholder="Spekers"
-                  onChange={handleChange}
-                  value={values.speakers}
-                  name="spekers"
-                  error={!!touched.spekers && !!errors.spekers}
-                  helperText={touched.spekers && errors.spekers}
-                />
-              )}
+          <Grid item sm={12} md={12} xs={12}>
+            <TextField
+              fullWidth
+              label="Venue"
+              variant="outlined"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.venue}
+              name="venue"
+              error={!!touched.venue && !!errors.venue}
+              helperText={touched.venue && errors.venue}
             />
           </Grid>
 
-          <Grid item md={12} sm={12}>
-            <Autocomplete
-              multiple
-              id="tags-outlined"
-              options={spekers}
-              getOptionLabel={(spekers) => spekers?.name}
-              filterSelectedOptions
-              value={values.moderator || null}
-              onChange={(event, value) => {
-                setFieldValue('moderator', value);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Select Moderator"
-                  placeholder="Moderator"
-                  onChange={handleChange}
-                  value={values.moderator}
-                  name="spekers"
-                  error={!!touched.spekers && !!errors.spekers}
-                  helperText={touched.spekers && errors.spekers}
-                />
-              )}
-            />
-          </Grid>
-
-          <Grid item md={12} sm={12}>
-            <Autocomplete
-              multiple
-              freeSolo
-              options={discription}
-              onChange={handleAddDiscription}
-              value={discription || null}
-              getOptionLabel={(option) => option}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  multiline
-                  label="Discription"
-                  onBlur={handleBlur}
-                  value={discription}
-                  name="discription"
-                  error={!!touched.discription && !!errors.discription}
-                  helperText={touched.discription && errors.discription}
-                />
-              )}
+          <Grid item sm={12} md={12} xs={12}>
+            <TextField
+              fullWidth
+              multiline
+              label="Discription"
+              variant="outlined"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.discription}
+              name="discription"
+              error={!!touched.discription && !!errors.discription}
+              helperText={touched.discription && errors.discription}
             />
           </Grid>
         </Grid>
@@ -260,9 +188,10 @@ function Form() {
 }
 
 const checkoutSchema = yup.object().shape({
-  title: yup.string().required('Title is required'),
+  eventTitle: yup.string().required('Title is required'),
   startDateTime: yup.date().required('Starting Date is required'),
   endDateTime: yup.date().required('Ending Date required'),
+  venue: yup.string().required('Vanue is required'),
 });
 
 export default Form;

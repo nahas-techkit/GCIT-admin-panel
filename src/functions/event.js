@@ -1,6 +1,7 @@
 import { Alert, notifySucess, notifyError } from '../utils/alert';
 
 export const handleEventSubmit = async (values, resetForm, eventDispatch, addEvent, setDiscription) => {
+  console.log(values);
   try {
     eventDispatch({
       type: 'EVENT_REQUEST',

@@ -64,7 +64,7 @@ function getComparator(order, orderBy) {
 }
 
 function applySortFilter(array, comparator, query) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
+  const stabilizedThis = array?.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
@@ -96,7 +96,6 @@ export default function EventTable({ events,deleteEvent }) {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const editEvent = () => {
-    console.log('event', eventId);
     navigate(`/dashboard/event/edit/${eventId}`)
   };
 

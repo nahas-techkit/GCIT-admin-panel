@@ -1,9 +1,10 @@
 // ----------------------------------------------------------------------
 
 const account = {
-  displayName: 'Jaydon Frankie',
-  email: 'demo@minimals.cc',
-  photoURL: '/assets/images/avatars/avatar_default.jpg',
+  displayName: 'IGIC',
+  email: 'adminigic@gmail.com"',
+  photoURL: '/assets/images/avatars/igic-logo.png',
+ 
 };
 
 export default account;

@@ -33,7 +33,7 @@ function Index() {
   return (
     <Container>
         {loading && <Loading loading={loading} />}
-      <Sponser  row={sponser}/>
+      <Sponser  row={sponser} getAllSponsers={getAllSponsers}/>
     </Container>
   );
 }

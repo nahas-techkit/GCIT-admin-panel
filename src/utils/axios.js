@@ -27,7 +27,7 @@ instance.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const { data } = await instance.post('/api/v1/auth/regenerate-token', {
+        const { data } = await instance.post('v1/auth/regenerate-token', {
           refreshToken: localStorage.getItem('refreshToken'),
         });
 

@@ -10,16 +10,20 @@ import Page404 from './pages/Page404';
 import ProductsPage from './pages/ProductsPage';
 import DashboardAppPage from './pages/DashboardAppPage';
 
-import Event from './pages/Event/Index'
-import EventForm from './components/events/CreateEvent'
-import Spekers from './pages/Spekers/Index'
-import CreateSpekers from './components/spekers/Create'
-import Sponser from './pages/Sponser/Index'
-import SponserForm from './components/sponsers/Create'
-import Image from './pages/Gallery/Images'
-import AddImage from './components/Gallery/DropImage'
-import Video from './pages/Gallery/Video'
-import AddVideo from './components/Gallery/AddVideo'
+import Event from './pages/Event/Index';
+import EventForm from './components/events/CreateEvent';
+import EventView from './components/events/View/Index';
+import ScheduleForm from './components/events/AddProgrammes';
+import Spekers from './pages/Spekers/Index';
+import CreateSpekers from './components/spekers/Create';
+import Sponser from './pages/Sponser/Index';
+import SponserForm from './components/sponsers/Create';
+import Image from './pages/Gallery/Images';
+import AddImage from './components/Gallery/DropImage';
+import Video from './pages/Gallery/Video';
+import AddVideo from './components/Gallery/AddVideo';
+import AuthGuard from './guards/AuthGuard';
+
 
 // ----------------------------------------------------------------------
 
@@ -27,56 +31,55 @@ export default function Router() {
   const routes = useRoutes([
     {
       path: '/dashboard',
-      element: <DashboardLayout />,
+      element: <AuthGuard> <DashboardLayout /></AuthGuard>,
       children: [
         { element: <Navigate to="/dashboard/app" />, index: true },
         { path: 'app', element: <DashboardAppPage /> },
-        { 
-          path:'event',
-          children:[
-            {element:<Event/>, index:true},
-            {path:'create', element:<EventForm/>},
-            {path:'edit/:id', element:<EventForm/>},
-          ]
-         },
+        {
+          path: 'event',
+          children: [
+            { element: <Event />, index: true },
+            { path: 'create', element: <EventForm /> },
+            { path: 'edit/:id', element: <EventForm /> },
+            { path: 'view/:id', element: <EventView /> },
+            { path: 'schedule/:eventId', element: <ScheduleForm /> },
+            { path: 'schedule/edit/:eventId/:schId', element: <ScheduleForm /> },
+          ],
+        },
 
-        
-        { path: 'spekers', 
-        children: [
-          {element: <Spekers /> , index:true},
-          {path:'create', element:<CreateSpekers/>},
-          {path:'edit/:id', element:<CreateSpekers/>},
-        ]
-      
-      },
+        {
+          path: 'spekers',
+          children: [
+            { element: <Spekers />, index: true },
+            { path: 'create', element: <CreateSpekers /> },
+            { path: 'edit/:id', element: <CreateSpekers /> },
+          ],
+        },
 
-      { path: 'sponser', 
-        children: [
-          {element: <Sponser /> , index:true},
-          {path:'create', element:<SponserForm/>},
-          {path:'edit/:id', element:<SponserForm/>}
-        ]
-      
-      },
+        {
+          path: 'sponser',
+          children: [
+            { element: <Sponser />, index: true },
+            { path: 'create', element: <SponserForm /> },
+            { path: 'edit/:id', element: <SponserForm /> },
+          ],
+        },
 
-      { path: 'images', 
-        children: [
-          {element: <Image /> , index:true},
-          {path:'create', element:<AddImage/>}
-        ]
-      
-      },
+        {
+          path: 'images',
+          children: [
+            { element: <Image />, index: true },
+            { path: 'create', element: <AddImage /> },
+          ],
+        },
 
-      { path: 'video', 
-      children: [
-        {element: <Video /> , index:true},
-        {path:'create', element:<AddVideo/>}
-      ]
-    
-    },
-
-
-
+        {
+          path: 'video',
+          children: [
+            { element: <Video />, index: true },
+            { path: 'create', element: <AddVideo /> },
+          ],
+        },
 
         { path: 'blog', element: <BlogPage /> },
       ],

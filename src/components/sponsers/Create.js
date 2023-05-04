@@ -41,9 +41,9 @@ function Form() {
       const { data } = await axios.get(`v1/admin/sponsor/${id}`);
 
       setIntialValue({
-        name: data.name,
-        email: data.email,
-        company_bio: data.bio,
+        name: data?.name,
+        email: data?.email,
+        company_bio: data?.bio,
         sponserImg: null,
       });
       setSponser(data);
@@ -81,6 +81,7 @@ function Form() {
             spekerDispatch({ type: 'SPEKERS_SUCCESS', payload: data });
           } else{
             const { data } = await axios.put(`v1/admin/sponsor/${id}`, formData);
+            spekerDispatch({ type: 'SPEKERS_SUCCESS'});
           }
         } catch (err) {
           spekerDispatch({ type: 'SPEKERS_ERROR', payload: err.message });
@@ -101,7 +102,7 @@ function Form() {
     validationSchema: checkoutSchema,
     enableReinitialize: edit,
     onSubmit: async (values, { resetForm }) => {
-      console.log(values);
+      
       handleSponsorSubmit(values, resetForm);
     },
   });
@@ -112,7 +113,7 @@ function Form() {
 
   return (
     <Container>
-      {loading && <Loading />}
+      { <Loading loading={loading} />}
       <Toaster />
       <Typography variant="h4" gutterBottom>
         Create New Sponser
@@ -198,7 +199,6 @@ function Form() {
           />
         )}
         <Stack
-          sx={{ position: 'sticky', bottom: 100, right: 50 }}
           mt={3}
           direction="row"
           justifyContent="flex-end"

@@ -49,10 +49,37 @@ export function spekerReducer(state, action) {
         };
       case "EVENT_ERROR":
         return { ...state, loading: false, error: action.payload };
+
+
+        case "EVENT_DELETE":
+          return {
+            ...state,
+            loading: false,
+            events: action.payload,
+            error: "",
+          };
   
       default:
         return state;
     }
   }
 
+  export function getEventByIdReducer(state, action) {
+    switch (action.type) {
+      case "EVENT_REQUEST":
+        return { ...state, loading: true, error: "" };
+      case "EVENT_SUCCESS":
+        return {
+          ...state,
+          loading: false,
+          event: action.payload,
+          error: "",
+        };
+      case "EVENT_ERROR":
+        return { ...state, loading: false, error: action.payload };
+  
+      default:
+        return state;
+    }
+  }
 
