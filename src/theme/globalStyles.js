@@ -38,6 +38,7 @@ export default function GlobalStyles() {
               margin: 0,
               WebkitAppearance: 'none',
             },
+            
           },
         },
         img: {
@@ -48,6 +49,9 @@ export default function GlobalStyles() {
           margin: 0,
           padding: 0,
         },
+        ".swal2-container": {
+          zIndex: 1210
+        }
       }}
     />
   );

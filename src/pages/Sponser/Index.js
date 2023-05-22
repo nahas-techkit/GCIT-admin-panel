@@ -25,6 +25,7 @@ function Index() {
     }
   };
 
+  console.log(sponser, 'success');
 
   useEffect(() => {
     getAllSponsers();

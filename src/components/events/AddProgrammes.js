@@ -136,7 +136,7 @@ function Form() {
 
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
-          <Grid item sm={12} md={12}>
+          <Grid item md={6} sm={12} xs={12}>
             <TextField
               fullWidth
               label="Title"
@@ -149,7 +149,7 @@ function Form() {
               helperText={touched.title && errors.title}
             />
           </Grid>
-          <Grid item md={6} sm={12}>
+          <Grid item md={6} sm={12} xs={12}>
             <InputLabel shrink htmlFor="bootstrap-input">
               Starting Date and Time
             </InputLabel>
@@ -166,7 +166,7 @@ function Form() {
             />
           </Grid>
 
-          <Grid item md={6} sm={12}>
+          <Grid item md={6} sm={12} xs={12}>
             <InputLabel shrink htmlFor="bootstrap-input">
               Ending Date and Time
             </InputLabel>
@@ -183,7 +183,7 @@ function Form() {
             />
           </Grid>
 
-          <Grid item md={12} sm={12}>
+          <Grid item md={6} sm={12} xs={12}>
             <Autocomplete
               multiple
               id="tags-outlined"
@@ -209,7 +209,7 @@ function Form() {
             />
           </Grid>
 
-          <Grid item md={12} sm={12}>
+          <Grid item md={6} sm={12} xs={12}>
             <Autocomplete
               multiple
               id="tags-outlined"
@@ -235,7 +235,7 @@ function Form() {
             />
           </Grid>
 
-          <Grid item md={12} sm={12}>
+          <Grid item md={6} sm={12} xs={12}>
             <Autocomplete
               multiple
               freeSolo

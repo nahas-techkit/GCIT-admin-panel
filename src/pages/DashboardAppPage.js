@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { useEffect, useState } from 'react';
 import { faker } from '@faker-js/faker';
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -18,22 +19,35 @@ import {
   AppConversionRates,
 } from '../sections/@dashboard/app';
 
-import axios from '../utils/axios'
+import axios from '../utils/axios';
+import Loading from '../components/Loading/Loading';
 // ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
+  const [details, setDetails] = useState({});
+  const [loading, setLoading] = useState(false);
   const theme = useTheme();
 
-  const getDashboardDetails = async ()=>{
-    const {data} = await axios.get('v1/admin/dashboard')
-  }
+  const getDashboardDetails = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.get('v1/admin/dashboard');
+      setDetails(data?.dashBoard);
+      setDetails(false);
+    } catch (error) {
+      setDetails(false);
+    }
+  };
 
+  useEffect(() => {
+    getDashboardDetails();
+  }, []);
   return (
     <>
       <Helmet>
         <title> Dashboard | IGIC </title>
       </Helmet>
-
+      <Loading loading={loading} />
       <Container maxWidth="xl">
         <Typography variant="h4" sx={{ mb: 5 }}>
           Hi, Welcome back
@@ -41,19 +55,29 @@ export default function DashboardAppPage() {
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Total Users" total={714000} icon={'mdi:user'} />
+            <AppWidgetSummary title="Total Users" total={details?.user} icon={'mdi:user'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Total Events" total={1352831} color="info" icon={'material-symbols:event-note-outline'} />
+            <AppWidgetSummary
+              title="Total Events"
+              total={details?.event}
+              color="info"
+              icon={'material-symbols:event-note-outline'}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Total Spekers" total={1723315} color="warning" icon={'material-symbols:mic-external-on-rounded'} />
+            <AppWidgetSummary
+              title="Total Spekers"
+              total={details?.speker}
+              color="warning"
+              icon={'material-symbols:mic-external-on-rounded'}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Total Sponsers" total={234} color="error" icon={'mdi:charity'} />
+            <AppWidgetSummary title="Total Sponsers" total={details?.sponser} color="error" icon={'mdi:charity'} />
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>
@@ -74,12 +98,12 @@ export default function DashboardAppPage() {
                 '11/01/2003',
               ]}
               chartData={[
-                {
-                  name: 'Team A',
-                  type: 'column',
-                  fill: 'solid',
-                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
-                },
+                // {
+                //   name: 'Team A',
+                //   type: 'column',
+                //   fill: 'solid',
+                //   data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
+                // },
                 {
                   name: 'Team B',
                   type: 'area',
@@ -100,15 +124,15 @@ export default function DashboardAppPage() {
             <AppCurrentVisits
               title="Current Visits"
               chartData={[
-                { label: 'America', value: 4344 },
-                { label: 'Asia', value: 5435 },
-                { label: 'Europe', value: 1443 },
-                { label: 'Africa', value: 4443 },
+                { label: 'Ongoing', value: details?.eventOngoing },
+                { label: 'Pending', value: details?.eventPending },
+                { label: 'Completed', value: details?.eventCompleted },
+                { label: 'Cancelled', value: details?.eventCancelled },
               ]}
               chartColors={[
                 theme.palette.primary.main,
-                theme.palette.info.main,
                 theme.palette.warning.main,
+                theme.palette.success.main,
                 theme.palette.error.main,
               ]}
             />

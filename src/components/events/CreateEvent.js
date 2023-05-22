@@ -61,7 +61,7 @@ function Form() {
     const { isConfirmed } = await Alert('Are you sure?', 'you want to add this');
     if (isConfirmed) {
       setLoading(true);
-      const { data } = await axios.post('v1/admin/event', values);
+      const { data } = await axios.put('v1/admin/event', values);
       notifySucess(data.message);
       resetForm();
       setLoading(false);

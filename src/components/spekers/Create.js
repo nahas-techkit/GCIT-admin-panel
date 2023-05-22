@@ -301,7 +301,7 @@ function Form() {
           />
         )}
         <Stack
-          sx={{ position: 'sticky', bottom: 100, right: 50 }}
+          
           mt={3}
           direction="row"
           justifyContent="flex-end"

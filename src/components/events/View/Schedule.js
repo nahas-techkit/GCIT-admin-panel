@@ -78,8 +78,14 @@ function Schedule({ eventSchedule, id, getEvent }) {
       </Stack>
 
       {eventSchedule?.map((item, i) => {
-        const startDate = moment(item?.startDateTime).format('MMMM Do YYYY, h:mm a');
-        const endtDate = moment(item?.endDateTime).format('MMMM Do YYYY, h:mm a');
+        // // const startDate = moment(item?.startDateTime).format('MMMM Do YYYY, h:mm a');
+        // const startDate = moment(item?.startDateTime).format("MMMM Do YYYY, h:mm a");
+        // console.log(startDate, 'Start Date: ');
+        // // const endtDate = moment(item?.endDateTime).format('MMMM Do YYYY, h:mm a');
+        // const endtDate = moment(item?.endDateTime).format('MMMM Do YYYY, h:mm a');
+
+        console.log(item);
+
         const color =
           item?.status === 'Pending'
             ? 'warning'
@@ -110,10 +116,10 @@ function Schedule({ eventSchedule, id, getEvent }) {
             </Stack>
 
             <Typography>
-              Starting : <b>{startDate}</b>
+              Starting : <b>{item?.startDateTimeShow}</b>
             </Typography>
             <Typography>
-              Ending : <b>{endtDate}</b>
+              Ending : <b>{item?.endDateTimeShow}</b>
             </Typography>
 
             <Typography>
