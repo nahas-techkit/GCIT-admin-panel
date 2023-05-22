@@ -47,7 +47,7 @@ export default function DashboardAppPage() {
       <Helmet>
         <title> Dashboard | IGIC </title>
       </Helmet>
-      <Loading loading={loading} />
+      {/* <Loading loading={loading} /> */}
       <Container maxWidth="xl">
         <Typography variant="h4" sx={{ mb: 5 }}>
           Hi, Welcome back
@@ -124,10 +124,10 @@ export default function DashboardAppPage() {
             <AppCurrentVisits
               title="Current Visits"
               chartData={[
-                { label: 'Ongoing', value: details?.eventOngoing  },
-                { label: 'Pending', value: details?.eventPending },
-                { label: 'Completed', value: details?.eventCompleted },
-                { label: 'Cancelled', value: details?.eventCancelled },
+                { label: 'Ongoing', value: details?.eventOngoing || 0  },
+                { label: 'Pending', value: details?.eventPending || 0 },
+                { label: 'Completed', value: details?.eventCompleted || 0 },
+                { label: 'Cancelled', value: details?.eventCancelled || 0 },
               ]}
               chartColors={[
                 theme.palette.primary.main,
