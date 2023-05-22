@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'http://localhost:4001/api/',
-  // baseURL: 'https://cumbre.appstronauts.in/api/',
+  // baseURL: 'http://localhost:4001/api/',
+  baseURL: 'https://cumbre.appstronauts.in/api/',
 });
 
 instance.interceptors.request.use((config) => {

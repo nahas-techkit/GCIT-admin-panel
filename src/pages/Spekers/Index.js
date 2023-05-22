@@ -19,7 +19,7 @@ function Index() {
       dispatch({ type: 'SPEKERS_REQUEST' });
 
       const { data } = await axios.get('v1/admin/speker');
-
+console.log(data,'spekers');
       dispatch({ type: 'SPEKERS_SUCCESS', payload: data });
     } catch (err) {
       dispatch({ type: 'SPEKERS_ERROR', payload: err.message });

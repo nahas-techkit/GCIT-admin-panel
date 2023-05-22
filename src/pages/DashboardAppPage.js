@@ -55,13 +55,13 @@ export default function DashboardAppPage() {
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Total Users" total={details?.user} icon={'mdi:user'} />
+            <AppWidgetSummary title="Total Users" total={details?.user || 0} icon={'mdi:user'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
             <AppWidgetSummary
               title="Total Events"
-              total={details?.event}
+              total={details?.event || 0}
               color="info"
               icon={'material-symbols:event-note-outline'}
             />
@@ -70,14 +70,14 @@ export default function DashboardAppPage() {
           <Grid item xs={12} sm={6} md={3}>
             <AppWidgetSummary
               title="Total Spekers"
-              total={details?.speker}
+              total={details?.speker || 0}
               color="warning"
               icon={'material-symbols:mic-external-on-rounded'}
             />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Total Sponsers" total={details?.sponser} color="error" icon={'mdi:charity'} />
+            <AppWidgetSummary title="Total Sponsers" total={details?.sponser || 0} color="error" icon={'mdi:charity'} />
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>
@@ -124,7 +124,7 @@ export default function DashboardAppPage() {
             <AppCurrentVisits
               title="Current Visits"
               chartData={[
-                { label: 'Ongoing', value: details?.eventOngoing },
+                { label: 'Ongoing', value: details?.eventOngoing  },
                 { label: 'Pending', value: details?.eventPending },
                 { label: 'Completed', value: details?.eventCompleted },
                 { label: 'Cancelled', value: details?.eventCancelled },
